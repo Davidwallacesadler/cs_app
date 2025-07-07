@@ -25,7 +25,7 @@ Following the book, we can use the same methods as base 10, making sure to keep 
 0x  6  0  6  1
 ```
 
-Note that we had to carry `1` after computing `C + 5`.
+Note that we had to carry `1` after computing `C + 5` since this evaluates to `C (12) + 5 (5) = F + 1 (17)`.
 
 ## B.
 
