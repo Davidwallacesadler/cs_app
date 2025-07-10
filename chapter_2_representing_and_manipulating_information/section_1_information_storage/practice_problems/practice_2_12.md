@@ -20,7 +20,7 @@ Given that only the least significant byte is all that remains we could apply a 
 x & 0xFF
 
 0x87654321
-0x      FF &
+0x000000FF &
 ------------
 0x00000021
 ```
@@ -49,7 +49,7 @@ x & 0xFF (Save the least-significant byte)
 => (x & 0xFF) | (~x & ~0xFF)
 
 0x87654321
-0x      FF &
+0x000000FF &
 ------------
 0x00000021
 
