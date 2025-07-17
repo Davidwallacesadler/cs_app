@@ -15,4 +15,3 @@ This section goes over how we represent data on computer systems as bits. These 
 - "The natural way to write a byte sequence is to have the lowest-numbered byte on the left and the highest on the right, but this is contrary to the normal way of writing numbers..." (80). Super interesting I think!
 - In C, we can think of the `char` data type analogous to a `Byte` in other languages like java. Since this represents just a single-byte of data (w = 8). (83)
 - `void**` - A void pointer pointer? A pointer to a pointer of an unspecified type! This allows us to store the memory address of another pointer! (84)
-- 
