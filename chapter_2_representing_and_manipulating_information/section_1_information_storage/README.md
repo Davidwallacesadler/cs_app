@@ -2,16 +2,28 @@
 This section goes over how we represent data on computer systems as bits. These bits are then interpreted in different ways, allowing us to represent all kinds of different information using these bits.
 
 ## Notes
-- "When we group bits together and apply some interpretation that gives meaning to the different possible bit patterns...". (71) This is pretty much the one of the big conclusions of the book "Code" by Petzold. We as humans have a powerful ability to encode different meanings into things and in particular binary (on/off) states.
-- "A machine-level program views memory as a very large array of bytes, referred to as virtual memory." (71) Memory from around the system is abstracted into virtual memory in the virtual address space.
-- In C "A pointer has two aspects: its **value** and its **type**. The value indicates the location of some object, while its type indicates what kind of object is stored at that location" (72)
-- "We write bit patterns as base-16 or **hexadecimal** numbers... a single byte can range from 00 to FF" (72). So every hex char is a nibble and every two hex chars is a byte!
-- "Every computer has a **word size**, indicating the nominal size of pointer data" (75). This is what we mean when we say "64-bit" machine. The word size is 64-bit.
-- "For a machine with w-bit word size, the virtual addresses can range from 0 to 2^w - 1, giving the program access to at most 2^w bytes... A 32-bit word size limits the virtual address space to 4 GB... A 64-bit wordd size leads to a virtual address space of 16 **exabytes**" (75). Wow what a huge difference between 32 and 64 bits!
-- "ISO C99 introduced a class of data types where the data sizes are fixed regardless of compilter and machine settings. Among these data types `int32_t` and `int64_t`, having exactly 4 and 8 bytes, respectively. Using fixed-size integer types is the best way for programmers to have close control over representations" (77). This is the same as in C++, for portability we want to use the fixed sized integer types to avoid issues of data types being represented by different amounts of bytes depending on the target platform.
-- "A multi-byte object is stored as a contiguous sequence of bytes, with the address of the object given by the smallest address of the bytes used." (78)
-- "Some machines choose to store the object in memory ordered from least significant byte to most, while other machines store them from most to least... Where the least significant byte is first -- is referred to as **little endian** and the other referred to as **big endian**" (78).
-- "ARM processors, used in many cell phones, have hardward that can operate in either little- or big-endian mode, but the two most common operating systems for these chips -- Android and iOS -- operate only in little endian mode" (79). With my little experience doing lower level bit operations I have seen this especially on iOS.
-- "The natural way to write a byte sequence is to have the lowest-numbered byte on the left and the highest on the right, but this is contrary to the normal way of writing numbers..." (80). Super interesting I think!
-- In C, we can think of the `char` data type analogous to a `Byte` in other languages like java. Since this represents just a single-byte of data (w = 8). (83)
-- `void**` - A void pointer pointer? A pointer to a pointer of an unspecified type! This allows us to store the memory address of another pointer! (84)
+"When we group bits together and apply some interpretation that gives meaning to the different possible bit patterns...". (71) This is pretty much the one of the big conclusions of the book "Code" by Petzold. We as humans have a powerful ability to encode different meanings into things and in particular binary (on/off) states.
+
+"A machine-level program views memory as a very large array of bytes, referred to as virtual memory." (71) Memory from around the system is abstracted into virtual memory in the virtual address space.
+
+In C "A pointer has two aspects: its **value** and its **type**. The value indicates the location of some object, while its type indicates what kind of object is stored at that location" (72)
+
+"We write bit patterns as base-16 or **hexadecimal** numbers... a single byte can range from 00 to FF" (72). So every hex char is a nibble and every two hex chars is a byte!
+
+"Every computer has a **word size**, indicating the nominal size of pointer data" (75). This is what we mean when we say "64-bit" machine. The word size is 64-bit.
+
+"For a machine with w-bit word size, the virtual addresses can range from 0 to 2^w - 1, giving the program access to at most 2^w bytes... A 32-bit word size limits the virtual address space to 4 GB... A 64-bit wordd size leads to a virtual address space of 16 **exabytes**" (75). Wow what a huge difference between 32 and 64 bits!
+
+"ISO C99 introduced a class of data types where the data sizes are fixed regardless of compilter and machine settings. Among these data types `int32_t` and `int64_t`, having exactly 4 and 8 bytes, respectively. Using fixed-size integer types is the best way for programmers to have close control over representations" (77). This is the same as in C++, for portability we want to use the fixed sized integer types to avoid issues of data types being represented by different amounts of bytes depending on the target platform.
+
+"A multi-byte object is stored as a contiguous sequence of bytes, with the address of the object given by the smallest address of the bytes used." (78)
+
+"Some machines choose to store the object in memory ordered from least significant byte to most, while other machines store them from most to least... Where the least significant byte is first -- is referred to as **little endian** and the other referred to as **big endian**" (78).
+
+"ARM processors, used in many cell phones, have hardware that can operate in either little- or big-endian mode, but the two most common operating systems for these chips -- Android and iOS -- operate only in little endian mode" (79). With my little experience doing lower level bit operations I have seen this especially on iOS.
+
+"The natural way to write a byte sequence is to have the lowest-numbered byte on the left and the highest on the right, but this is contrary to the normal way of writing numbers..." (80). Super interesting I think!
+
+In C, we can think of the `char` data type analogous to a `Byte` in other languages like java. Since this represents just a single-byte of data (w = 8). (83)
+
+`void**` - A void pointer pointer? A pointer to a pointer of an unspecified type! This allows us to store the memory address of another pointer! (84)
