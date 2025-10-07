@@ -37,3 +37,5 @@ In C "When an operation is performed where one operand is signed and the other i
 
 "For converting a two's complement number to a larger data type, the rule is to perform *sign extension*, adding copies of the most significant bit to the representation." (113) Sounds very similar to the arithmetic shift!
 
+## 2.2.7 Truncating Numbers
+
