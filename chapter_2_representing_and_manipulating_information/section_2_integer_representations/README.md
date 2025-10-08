@@ -1,7 +1,7 @@
 # Section 2.2
 This section focuses on signed and unsigned integer representations and how this relates to on overflow as well.
 
-## 2.2: Integer Representations
+# 2.2: Integer Representations
 The section outlines "two different ways bits can be used to encode integers" (95). This is unsigned and two's complement encodings!
 
 ## 2.2.1: Integral Data Types
@@ -37,5 +37,17 @@ In C "When an operation is performed where one operand is signed and the other i
 
 "For converting a two's complement number to a larger data type, the rule is to perform *sign extension*, adding copies of the most significant bit to the representation." (113) Sounds very similar to the arithmetic shift!
 
-## 2.2.7 Truncating Numbers
+## 2.2.7: Truncating Numbers
 
+"When truncating a w-bit number to a k-bit number, we drop the high-order (w-k) bits." (117) We pretty much just chop off the higher order bits when truncating to a lower bit number. This makes truncating unsigned numbers really simple!
+
+"A Similar property holds for truncating a two's-complement number, except that it then converts the most significant bit into a sign bit" (117) So trunctating a signed integer works pretty much the same as unsigned but we need to pay attention to the MSB after performing the truncation. Essentially, we truncate as an unsigned number and then apply U2T.
+
+"Casting of signed to unsigned leads to some non-intuitive behavior". (119) Be very careful with implicit casting and keep a mental model of whether you are working with unsigned or two's-complement integers.
+
+"Unsigned values are very useful when we want to think of words as just collections of bits with no numeric representation" (120). This makes sense, we typically use these values for flags, enum ordinals, addresses, and sizes.
+
+# 2.3: Integer Arithmetic
+This section breaks down the "nuances of computer arithmetic" so we can write more reliable code!
+
+## 2.3.1: Unsigned Addition
