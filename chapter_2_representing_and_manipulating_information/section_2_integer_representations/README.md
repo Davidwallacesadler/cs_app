@@ -45,9 +45,19 @@ In C "When an operation is performed where one operand is signed and the other i
 
 "Casting of signed to unsigned leads to some non-intuitive behavior". (119) Be very careful with implicit casting and keep a mental model of whether you are working with unsigned or two's-complement integers.
 
-"Unsigned values are very useful when we want to think of words as just collections of bits with no numeric representation" (120). This makes sense, we typically use these values for flags, enum ordinals, addresses, and sizes.
+"Unsigned values are very useful when we want to think of words as just collections of bits with no numeric representation" (120). This makes sense, We typically use these values for flags, enum ordinals, addresses, and sizes.
 
 # 2.3: Integer Arithmetic
-This section breaks down the "nuances of computer arithmetic" so we can write more reliable code!
+This section breaks down the "nuances of computer arithmetic" so we can write more reliable code when working with integers!
 
 ## 2.3.1: Unsigned Addition
+
+"We cannot place any bound on the word size required to fully represent the results of arithmetic operations." (121) We always havet he possibility of overflowing and requiring a larger word size to represent the arithmetic result.
+
+"The operation +(u/w)... can be characterized as a form of modular arithmetic, computing the sum modulo 2^w by simply discarding any bits with weight greater than 2^(w-1) in the bit-level representation of x + y." (121) So when we overflow with unsigned addition, we take the resulting bit-level representation of the sum and discard bits greater than original word size.
+
+"[With unsigned integers] the overflow case has the effect of decrementing the su, by 2^w." (123) We are essentially "chopping off" the overflow bit(s). The overflow acts almost like a "reset" mod 2^w. This makes sense because modulo essentially clamps the values between 0 and 2^w.
+
+"An arithmetic operation is said to *overflow* when the full integer result cannot fit within the word size limits of the data type." (123) This make sense. Overflow just means we cannot represent the result in the current word size!
+
+To detect overflow of unsigned addition: "The computation of *s* (x + y, x, y >= 0) overflowed if and only if s < x (or equivalently, s < y)"
