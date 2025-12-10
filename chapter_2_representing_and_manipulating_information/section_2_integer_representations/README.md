@@ -58,6 +58,31 @@ This section breaks down the "nuances of computer arithmetic" so we can write mo
 
 "[With unsigned integers] the overflow case has the effect of decrementing the su, by 2^w." (123) We are essentially "chopping off" the overflow bit(s). The overflow acts almost like a "reset" mod 2^w. This makes sense because modulo essentially clamps the values between 0 and 2^w.
 
-"An arithmetic operation is said to *overflow* when the full integer result cannot fit within the word size limits of the data type." (123) This make sense. Overflow just means we cannot represent the result in the current word size!
+"An arithmetic operation is said to *overflow* when the full integer result cannot fit within the word size limits of the data type." (123) This makes sense. Overflow just means we cannot represent the result in the current word size -- it's too big!
 
-To detect overflow of unsigned addition: "The computation of *s* (x + y, x, y >= 0) overflowed if and only if s < x (or equivalently, s < y)"
+To detect overflow of unsigned addition: "The computation of *s* (x + y, x, y >= 0) overflowed if and only if s < x (or equivalently, s < y)" (124). We can extend this to thinking about additive inverses! If we have an unsigned integer and add another one that gets us to overflow back to zero (2^w - x) and that is the definition of an additive inverse! Super cool!
+
+## 2.3.2 Two's Complement Addition
+
+"When the sum x + y exceeds TMax we say that a *positive overflow* has ocurred" (126). This make sense based on what we just learned in the previous section when dealing with unsigned integers. If the new value is too big to be represented by the max value of a two's complement integer in the word size we rollover back to zero.
+
+"When the sum of x + y is less than Tmin we say that a *negative overflow* has ocurred" (126). Again, this makes sense based on "rolling over" back to zero.
+
+"Since two's complement addition has the exact same bit level representation, we can characterize the operation +(t/w) as one of converting the arguments to unsigned, performing unsigned addition, and then converting to two's complement" (126). So to add two two's complement integers, we pretty much just add them the same as unsigned numbers and then interpret the result as a two's complement integer. 
+
+^ This feels like a similar approach to how we handled truncation where we would just perform the operation as usual and then handle "chopping bits" on the result after.
+
+"For x and y in the range Tmin <= x, y <= Tmax, let s = x +(t/w) y. Then the computation of s has had a positive overflow if and only if x > 0 and y > 0 but s <= 0. The computation has had negative overflow if and only if x < 0 and y < 0 but s >= 0." (128) This makes sense! If we were adding two numbers of the same sign and the result has a different one we know we overflowed!
+
+Positive Overflow: 
+    1. x + y > Tmax
+    2. x > 0 and y > 0 and x + y <= 0
+
+Negative Overflow:
+    1. x + y < Tmin
+    2. x < 0 and y < 0 and x + y >= 0
+
+
+
+
+
