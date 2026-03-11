@@ -169,3 +169,55 @@ Signed multiplication in C generally is performed by truncating the 2w-but produ
 2. Perform the multiplcation
 3. Interpret the product as binary
 4. Truncate to the word size
+
+## 2.3.6 Multiplying by Constants
+
+Multiplication is slow so "one improtant optimization used by compilers is to attempt to replace multiplications by constant factors with combinations of shift and addition operations" (137).
+
+First: We will consider the case of multiplying by a power of 2 then arbitrary constants.
+
+### Multiplying by powers of 2
+
+We can see that if we add zeros to the right of our bit-wise representation of our number we can get some multiplicative properites:
+
+Example:
+```
+11
+= [1011] (w = 4)
+= [101100] (shifting left by k = 2)
+= 44
+= 11 * 4
+```
+
+When shifting left by k for a fixed word size, the high-order k bits are discarded.
+
+"Shifting a value left is equivalent to performing unsigned multiplication by a power of 2" (138)
+
+**Multiplication by a power of 2:** x << k (same between unsigned and two's complement because bit level representation is the same!)
+
+"Given that integer multiplication is more costly than shifting and adding, many C compilers try to remove many cases where an integer is being multiplied by a constant with combinations of shifting, adding, and subtracting" (138)
+
+Example:
+```
+x*14:
+14 = 2^3 + 2^2 + 2^1
+=> (x<<3) + (x<<2) + (x<<1)
+=> Replacing * with 3 shifts and 2 additions
+
+OR
+
+14 = 2^4 - 2^1
+=> (x<<4) - (x<<1)
+=> Replacing * with 2 shifts and 1 subtraction
+```
+
+Generalizing from our examples:
+
+Consider generating code for the expression `x * K` for some constant K. The compiler can express the binary representation of K as an alternating sequence of zeros and ones.
+
+Consider a run of ones from bit position n down to m (n >= m) - we can compute the effect on these bits on the product using either of the two different forms:
+
+- Form A: `(x<<n) + (x<<(n - a)) + ... + (x<<m)`
+- Form B: `(x<<(n + 1)) - (x<<m)`
+
+This trade off only makes sense for low amounts of operations and the relative speed of the instructions - "Most compilers only perform this optimization when a small number of shifts, adds, and subtractions suffice" (139)
