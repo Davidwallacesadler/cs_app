@@ -221,3 +221,13 @@ Consider a run of ones from bit position n down to m (n >= m) - we can compute t
 - Form B: `(x<<(n + 1)) - (x<<m)`
 
 This trade off only makes sense for low amounts of operations and the relative speed of the instructions - "Most compilers only perform this optimization when a small number of shifts, adds, and subtractions suffice" (139)
+
+## 2.3.7 Dividing by Powers of 2
+
+Integer division on most machines is even slower than multiplication -- 30 or more clock cycles!! But dividing by powers of 2 can be done using shift operations similar to multiplication by powers of 2. The main difference being that these shifts will be right shifts and not left.
+
+"Integer division always rounds toward zero" (140)
+
+**Unsigned division by a power of 2**: For C variables x and k with unsigned values x and k, such that 0 <= k < w, the C expression `x >> k` yields the value `floor(x/2^k)`. Basically, examples in the text illustracte that aritmetic right shift is very similar to division by a power of 2 (rounding to 0).
+
+**Signed division by a pwoer of 2**: Let C variables x and k have two's-complement value x and unsigned value k, respectively, such that 0 <= k < w. The C expression `x >> k`, when the shift is performed arithmetically, yields the value `floor(x/2^k)`. When rounding is required, shifting causes the result to be rounded downward.
