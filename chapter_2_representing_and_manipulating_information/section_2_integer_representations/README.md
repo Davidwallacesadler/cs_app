@@ -231,3 +231,6 @@ Integer division on most machines is even slower than multiplication -- 30 or mo
 **Unsigned division by a power of 2**: For C variables x and k with unsigned values x and k, such that 0 <= k < w, the C expression `x >> k` yields the value `floor(x/2^k)`. Basically, examples in the text illustracte that aritmetic right shift is very similar to division by a power of 2 (rounding to 0).
 
 **Signed division by a pwoer of 2**: Let C variables x and k have two's-complement value x and unsigned value k, respectively, such that 0 <= k < w. The C expression `x >> k`, when the shift is performed arithmetically, yields the value `floor(x/2^k)`. When rounding is required, shifting causes the result to be rounded downward.
+
+We can correct for improper rounding that occurs when dividing a negative Two's-Complement number by biasing the value before shifting.
+ 
