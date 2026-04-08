@@ -1,0 +1,192 @@
+# 2.3: Integer Arithmetic
+This section breaks down the "nuances of computer arithmetic" so we can write more reliable code when working with integers!
+
+## 2.3.1: Unsigned Addition
+
+"We cannot place any bound on the word size required to fully represent the results of arithmetic operations." (121) We always havet he possibility of overflowing and requiring a larger word size to represent the arithmetic result.
+
+"The operation +(u/w)... can be characterized as a form of modular arithmetic, computing the sum modulo 2^w by simply discarding any bits with weight greater than 2^(w-1) in the bit-level representation of x + y." (121) So when we overflow with unsigned addition, we take the resulting bit-level representation of the sum and discard bits greater than original word size.
+
+"[With unsigned integers] the overflow case has the effect of decrementing the su, by 2^w." (123) We are essentially "chopping off" the overflow bit(s). The overflow acts almost like a "reset" mod 2^w. This makes sense because modulo essentially clamps the values between 0 and 2^w.
+
+"An arithmetic operation is said to *overflow* when the full integer result cannot fit within the word size limits of the data type." (123) This makes sense. Overflow just means we cannot represent the result in the current word size -- it's too big to be encoded into this amount of data!
+
+To detect overflow of unsigned addition: "The computation of *s* (x + y, x, y >= 0) overflowed if and only if s < x (or equivalently, s < y)" (124). We can extend this to thinking about additive inverses! If we have an unsigned integer and add another one that gets us to overflow back to zero (2^w - x) and that is the definition of an additive inverse! Super cool!
+
+## 2.3.2 Two's Complement Addition
+
+"When the sum x + y exceeds TMax we say that a *positive overflow* has ocurred" (126). This makes sense based on what we just learned in the previous section when dealing with unsigned integers. If the new value is too big to be represented by the max value of a two's complement integer in the word size we rollover back to zero.
+
+"When the sum of x + y is less than Tmin we say that a *negative overflow* has ocurred" (126). Again, this makes sense based on "rolling over" back to zero.
+
+"Since two's complement addition has the exact same bit level representation, we can characterize the operation +(t/w) as one of converting the arguments to unsigned, performing unsigned addition, and then converting to two's complement" (126). So to add two two's complement integers, we pretty much just add them the same as unsigned numbers and then interpret the result as a two's complement integer. 
+
+^ This feels like a similar approach to how we handled truncation where we would just perform the operation as usual and then handle "chopping bits" on the result after.
+
+"For x and y in the range Tmin <= x, y <= Tmax, let s = x +(t/w) y. Then the computation of s has had a positive overflow if and only if x > 0 and y > 0 but s <= 0. The computation has had negative overflow if and only if x < 0 and y < 0 but s >= 0." (128) This makes sense! If we were adding two numbers of the same sign and the result has a different one we know we overflowed!
+
+Positive Overflow: 
+    1. x + y > Tmax
+    2. x > 0 and y > 0 and x + y <= 0
+
+Negative Overflow:
+    1. x + y < Tmin
+    2. x < 0 and y < 0 and x + y >= 0
+
+## 2.3.3 Two's Complement Negation
+
+An addititive inverse for a number x is another number -x such that when added the resulting sum is 0.
+
+Every number x in the range Tmin_w <= x <= Tmax_w has an additive inverse under +(t/w) which we denote -(t/w)x. We can define -(t/w)x using the following piecewise function (see 131):
+
+```
+           | Tmin_w  x = Tmin_w 
+-(t/w)x = <|
+           | -x      x > Tmin_w
+```
+
+So Tmin_w is its own additive inverse -- we can see this pretty clearly with 4-bit word size example:
+
+Given `w = 4`, we have Tmin_w = -8 = 1000. Adding it to itself, we see the operation overflows out of the word size (s = 10000) so using two's complement addition +(t/w) we end up with 0 since we truncate the sum to 4 bits and interpret it as a Two's complement integer - so by definition Tmin_w is its own additive inverse!
+
+Basically: The smallest value (greatest negative value) is its own additive inverse, otherwise the value is its own additive inverse.
+
+### Negating a Two's Complement Number
+
+There are two ways of negating a two's complement integer outlined in the chapter:
+1. Complement the bits (negate them), then increment the result (add 1)
+
+Let's test this on a couple values with a 4-bit word size:
+
+Tmin_4:
+- Tmin_4 = -8 = 0b1000
+- -(-8) = ~(0b1000) + 0b1 = 0b0111 + 0b1 = 0b1000 (as expected since Tmin is its own additive inverse)
+
+Tmax_4:
+- Tmax_4 = 7 = 0b0111
+- -7 = ~(0b0111) +0b1 = 0b1000 + 0b1 = 0b1001 = -8 + 1 = -7 (as expected)
+
+2:
+- 2 = 0b0010
+- -2 = ~(0b0010) + 0b1 = 0b1101 + 0b1 = 0b1110 = -8 + 4 + 2 = -2 (as expected)
+
+0:
+- 0 = 0b0000
+- -0 = ~(0b0000) + 0b1 = 0b1111 + 0b1 = 0b0000 = 0 (positive overflow back to 0)
+
+2. Split the bit vector into two bu splitting at the rightmost 1 (note as position `k`), then complement the bits to the left of position `k`.
+
+Examples (this time writing bits as bit-vectors instead of with the `0b` prefix):
+
+Tmin_4:
+- Tmin_4 = -8 = [1000]
+- -(-8) = [] [1000] (split at k = 3 - max index) = ~[] [1000] = [1000] (as expected)
+
+Tmax_4:
+- Tmax_4 = 7 = [0111]
+- -7 = [011] [1] (split at k = 0) = ~[011] [1] = [] = [100] [1] = [1001] = -7 (as expected)
+
+2:
+- 2 = [0010]
+- -2 = [00] [10] (split at k = 1) = ~[00] [10] = [11] [10] = [1110] = -2 (as expected) 
+
+0:
+- 0 = [0000]
+- -0 = [] [0000] (split at k = 0 - min index) = ~[] [0000] = [0000] = 0 (as expected)
+
+## 2.3.4 Unsigned Multiplication
+
+Unsigned multiplication in C is defined to yield the *w*-bit value given by the low-order *w* bits of the 2w-bit integer product. (132)
+
+So to multiply two unsigned integers we just multiply and then truncate to the word size.
+
+*(u/w):
+1. Multiply the integers
+2. Truncate to the word size
+
+## 2.3.5 Two's Complement Multiplication
+
+Signed multiplication in C generally is performed by truncating the 2w-but product to w bits. (133)
+
+*(t/w):
+1. Multiply the integers
+2. Truncate to the word size
+3. Interpret the unsigned result as Two's Complement (U2T)
+
+**NOTE:** As we can see from the above definitions of *(u/w) and *(t/w) the bit-level representation of both truncated products is identical for both unsigned and two's complement multiplication, even though the full representations may differ
+
+**PROCEDURE:** It seems from the examples in this section, the way to approach multiplcation is:
+1. Interpret the bits as a decimal integer
+2. Perform the multiplcation
+3. Interpret the product as binary
+4. Truncate to the word size
+
+## 2.3.6 Multiplying by Constants
+
+Multiplication is slow so "one improtant optimization used by compilers is to attempt to replace multiplications by constant factors with combinations of shift and addition operations" (137).
+
+First: We will consider the case of multiplying by a power of 2 then arbitrary constants.
+
+### Multiplying by powers of 2
+
+We can see that if we add zeros to the right of our bit-wise representation of our number we can get some multiplicative properites:
+
+Example:
+```
+11
+= [1011] (w = 4)
+= [101100] (shifting left by k = 2)
+= 44
+= 11 * 4
+```
+
+When shifting left by k for a fixed word size, the high-order k bits are discarded.
+
+"Shifting a value left is equivalent to performing unsigned multiplication by a power of 2" (138)
+
+**Multiplication by a power of 2:** x << k (same between unsigned and two's complement because bit level representation is the same!)
+
+"Given that integer multiplication is more costly than shifting and adding, many C compilers try to remove many cases where an integer is being multiplied by a constant with combinations of shifting, adding, and subtracting" (138)
+
+Example:
+```
+x*14:
+14 = 2^3 + 2^2 + 2^1
+=> (x<<3) + (x<<2) + (x<<1)
+=> Replacing * with 3 shifts and 2 additions
+
+OR
+
+14 = 2^4 - 2^1
+=> (x<<4) - (x<<1)
+=> Replacing * with 2 shifts and 1 subtraction
+```
+
+Generalizing from our examples:
+
+Consider generating code for the expression `x * K` for some constant K. The compiler can express the binary representation of K as an alternating sequence of zeros and ones.
+
+Consider a run of ones from bit position n down to m (n >= m) - we can compute the effect on these bits on the product using either of the two different forms:
+
+- Form A: `(x<<n) + (x<<(n - a)) + ... + (x<<m)`
+- Form B: `(x<<(n + 1)) - (x<<m)`
+
+This trade off only makes sense for low amounts of operations and the relative speed of the instructions - "Most compilers only perform this optimization when a small number of shifts, adds, and subtractions suffice" (139)
+
+## 2.3.7 Dividing by Powers of 2
+
+Integer division on most machines is even slower than multiplication -- 30 or more clock cycles!! But dividing by powers of 2 can be done using shift operations similar to multiplication by powers of 2. The main difference being that these shifts will be right shifts and not left.
+
+"Integer division always rounds toward zero" (140)
+
+**Unsigned division by a power of 2**: For C variables x and k with unsigned values x and k, such that 0 <= k < w, the C expression `x >> k` yields the value `floor(x/2^k)`. Basically, examples in the text illustracte that aritmetic right shift is very similar to division by a power of 2 (rounding to 0).
+
+**Signed division by a pwoer of 2**: Let C variables x and k have two's-complement value x and unsigned value k, respectively, such that 0 <= k < w. The C expression `x >> k`, when the shift is performed arithmetically, yields the value `floor(x/2^k)`. When rounding is required, shifting causes the result to be rounded downward.
+
+We can correct for improper rounding that occurs when dividing a negative Two's-Complement number by biasing the value before shifting.
+
+ ## 2.3.8 Final Thoughts on Integer Arithmetic
+
+ The integer arithmetic performed by computers is a really a form of modular arithmetic based on the finite word size and thus can overflow.
+
+ Two's-complement representation allows us to represent positive and negative values while behaving basically the same at the bit level as unsigned integers when it comes to addition, subtraction, multiplication, and division.
